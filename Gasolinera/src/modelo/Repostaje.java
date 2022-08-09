@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Objects;
+
 public class Repostaje {
 	private String matricula;
 	private String nombre;
@@ -96,7 +98,8 @@ public class Repostaje {
 	}
 	
 	public double getTotal() {
-		return getPrecioLitroDescuento()*this.litros;
+		double total= getPrecioLitroDescuento()*this.litros;
+		return total;
 	}
 	
 	protected double getPrecioLitroDescuento() {
@@ -118,4 +121,23 @@ public class Repostaje {
 	public void setTotal(double total) {
 		this.litros=total/getPrecioLitroDescuento();
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(matricula);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Repostaje other = (Repostaje) obj;
+		return Objects.equals(matricula, other.matricula);
+	}
+	
+	
 }

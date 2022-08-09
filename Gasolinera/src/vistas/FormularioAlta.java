@@ -13,12 +13,16 @@ import java.awt.Font;
 import java.util.List;
 
 import javax.swing.JTextField;
+
+import controladores.Principal;
+
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JPanel;
 
 public class FormularioAlta extends JFrame {
 	private JTextField txtMatricula;
@@ -31,6 +35,9 @@ public class FormularioAlta extends JFrame {
 	private JCheckBox chckbxAgrario;
 	private JCheckBox chckbxPorqueTuVuelves;
 	private JCheckBox chckbxBonificacion;
+	private Principal controlador;
+	private JButton btnResumen;
+	private Repostaje editar=null;
 
 	/**
 	 * Launch the application.
@@ -148,13 +155,22 @@ public class FormularioAlta extends JFrame {
 		getContentPane().add(chckbxBonificacion, "cell 1 6");
 		
 		JButton btnAceptar = new JButton("Aceptar");
+		getContentPane().add(btnAceptar, "flowx,cell 1 8,alignx center");
 		btnAceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				insertar();
 			}
 		});
 		btnAceptar.setFont(new Font("Verdana", Font.PLAIN, 14));
-		getContentPane().add(btnAceptar, "cell 0 8 2 1,alignx center");
+		
+		btnResumen = new JButton("Mostrar Resumen");
+		btnResumen.setFont(new Font("Verdana", Font.PLAIN, 14));
+		btnResumen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controlador.mostrarListado();
+			}
+		});
+		getContentPane().add(btnResumen, "cell 1 8,alignx center");
 	}
 
 	protected void comprobarDescuentos() {
@@ -186,6 +202,10 @@ public class FormularioAlta extends JFrame {
 		r.setMatricula(txtMatricula.getText());
 		r.setNombre(txtNombre.getText());
 		r.setDni(txtDni.getText());
+		r.setCombustible((Combustible)comboBoxCombustible.getSelectedItem());
+		r.setAgrario(chckbxAgrario.isSelected());
+		r.setGobierno(chckbxPorqueTuVuelves.isSelected());
+		r.setVuelves(chckbxBonificacion.isSelected());	
 		
 		try{
 			if(txtLitros.getText()!=null && !txtLitros.getText().isBlank() && txtTotal.getText()!=null && !txtTotal.getText().isBlank())
@@ -201,11 +221,13 @@ public class FormularioAlta extends JFrame {
 			}
 		}catch(NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,"Debe introducir un numero valido en litros o total.","N",JOptionPane.INFORMATION_MESSAGE);
+			return;
 		}
-		r.setCombustible((Combustible)comboBoxCombustible.getSelectedItem());
-		r.setAgrario(chckbxAgrario.isSelected());
-		r.setAgrario(chckbxPorqueTuVuelves.isSelected());
-		r.setAgrario(chckbxBonificacion.isSelected());	
+		
+		if(editar!=null) {
+			controlador.borrarRepostaje(editar);
+		}
+		controlador.insertarRepostaje(r);	
 	}
 
 	public void setListaCombustibles(List<Combustible> listaCombustibles) {
@@ -216,5 +238,35 @@ public class FormularioAlta extends JFrame {
 		comboBoxCombustible.setSelectedIndex(0);
 		
 	}
+	
+	public void borrarfAlta() {
+		this.editar=null;
+		txtMatricula.setText("");
+		txtNombre.setText("");
+		txtDni.setText("");
+		comboBoxCombustible.setSelectedIndex(0);
+		txtLitros.setText("");
+		txtTotal.setText("");
+		chckbxAgrario.setSelected(false);
+		chckbxBonificacion.setSelected(false);
+		chckbxPorqueTuVuelves.setSelected(false);
+		
+	}
 
+	public void setControlador(Principal controlador) {
+		this.controlador = controlador;
+	}
+
+	public void setRepostaje(Repostaje r) {
+		this.editar=r;
+		txtMatricula.setText(r.getMatricula()); 
+		txtNombre.setText(r.getNombre());
+		txtDni.setText(r.getDni());
+		comboBoxCombustible.setSelectedItem(r.getCombustible());
+		txtLitros.setText(""+r.getLitros());
+		txtTotal.setText(""+r.getTotal());
+		chckbxAgrario.setSelected(r.isAgrario());
+		chckbxBonificacion.setSelected(r.isGobierno());
+		chckbxPorqueTuVuelves.setSelected(r.isVuelves());
+	}
 }

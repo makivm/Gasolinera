@@ -1,30 +1,26 @@
 package vistas;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JTabbedPane;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
+import java.awt.Font;
 import java.util.List;
-import java.awt.event.ActionEvent;
-import javax.swing.JTable;
-import net.miginfocom.swing.MigLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
 
+import controladores.Principal;
 import modelo.Repostaje;
-
-import javax.swing.ScrollPaneConstants;
-import java.awt.Font;
+import net.miginfocom.swing.MigLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ListadoVentas extends JFrame {
 	private JTable table;
+	private Principal controlador;
 
 	/**
 	 * Launch the application.
@@ -78,13 +74,40 @@ public class ListadoVentas extends JFrame {
 		scrollPane.setViewportView(table);
 		
 		JButton btnVolver = new JButton("Volver");
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controlador.mostrarAlta();
+			}
+		});
 		btnVolver.setFont(new Font("Verdana", Font.PLAIN, 14));
-		getContentPane().add(btnVolver, "cell 0 2,alignx center");
+		getContentPane().add(btnVolver, "flowx,cell 0 2,alignx center");
+		
+		JButton btnEditar = new JButton("Editar");
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int fila=table.getSelectedRow();
+				controlador.mostrarAlta(fila);
+			
+				
+			}
+		});
+		btnEditar.setFont(new Font("Verdana", Font.PLAIN, 14));
+		getContentPane().add(btnEditar, "cell 0 2,alignx center");
 	}
 
 	public void setListaRepostajes(List<Repostaje> listaRepostajes) {
-		
-		
+		DefaultTableModel modelo=(DefaultTableModel) table.getModel();//CREA UNA TABLA
+		modelo.setRowCount(0); //ESTABLECE EL NUMERO DE FILAS DE LA TABLA
+		for (Repostaje repostaje : listaRepostajes) {
+			Object[] fila= {repostaje.getMatricula(),repostaje.getNombre(),repostaje.getDni(),repostaje.getCombustible(),repostaje.getLitros(),repostaje.getTotal(),repostaje.isAgrario(),repostaje.isGobierno(),repostaje.isVuelves()};
+			modelo.addRow(fila);
+		}
 	}
 
+	public void setControlador(Principal controlador) {
+		this.controlador = controlador;
+	}
+	
+	
+	
 }
